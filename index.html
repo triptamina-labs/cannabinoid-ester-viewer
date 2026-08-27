@@ -69,7 +69,8 @@ body{font-family:var(--mono);background:var(--bg);color:var(--ink);overflow:hidd
 .toolbar .sep{width:1px;height:18px;background:var(--line);margin:0 2px}
 /* nube / opacity slider */
 #btnNube.on{background:#2563eb;color:#fff;border-color:#2563eb}
-#btnCarga.on{background:#dc2626;color:#fff;border-color:#dc2626}
+#btnCarga{opacity:.3;pointer-events:none}
+#btnCarga.on{background:#dc2626;color:#fff;border-color:#dc2626;opacity:1;pointer-events:auto}
 #opacityWrap{display:none;align-items:center;gap:6px;font-size:.65rem;color:var(--secondary);text-transform:uppercase;letter-spacing:.04em}
 #opacityWrap.show{display:flex}
 #opacityWrap input[type=range]{width:80px;accent-color:var(--ink)}
@@ -346,6 +347,9 @@ function toggleNube(){
   nubeOn=!nubeOn;
   document.getElementById('btnNube').classList.toggle('on',nubeOn);
   document.getElementById('opacityWrap').classList.toggle('show',nubeOn);
+  // CARGA only available with nube
+  const cb=document.getElementById('btnCarga');
+  if(!nubeOn){cargaOn=false;cb.classList.remove('on')}
   if(nubeOn) loadNube(); else{viewer.removeAllSurfaces();viewer.render()}
 }
 function setNubeOpacity(v){nubeOpacity=parseFloat(v);if(nubeOn){viewer.removeAllSurfaces();loadNube()}}
