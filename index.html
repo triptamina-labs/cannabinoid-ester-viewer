@@ -123,16 +123,10 @@ body{font-family:var(--mono);background:var(--bg);color:var(--ink);overflow:hidd
   <span>CANNABINOID ESTER ANALYSIS</span><span class="sep">|</span>
   <span>GFN2-xTB / MMFF94 / ETKDG</span><span class="sep">|</span>
   <span>30 CONFÓRMEROS × 4 ÉSTERES</span><span class="sep">|</span>
-  <span>FORMACIÓN: +2 A +6 KCAL/MOL</span><span class="sep">|</span>
-  <span>LogP > 11 · TODOS DESFAVORABLES</span><span class="sep">|</span>
-  <span>THC-THCA: MÁS ESTABLE · THC-CBDA: MÁS ACCESIBLE</span><span class="sep">|</span>
   <span>TRIPTALABS</span><span class="sep">|</span>
   <span>CANNABINOID ESTER ANALYSIS</span><span class="sep">|</span>
   <span>GFN2-xTB / MMFF94 / ETKDG</span><span class="sep">|</span>
   <span>30 CONFÓRMEROS × 4 ÉSTERES</span><span class="sep">|</span>
-  <span>FORMACIÓN: +2 A +6 KCAL/MOL</span><span class="sep">|</span>
-  <span>LogP > 11 · TODOS DESFAVORABLES</span><span class="sep">|</span>
-  <span>THC-THCA: MÁS ESTABLE · THC-CBDA: MÁS ACCESIBLE</span><span class="sep">|</span>
 </div></div>
 
 <!-- HEADER -->
@@ -356,17 +350,10 @@ function toggleNube(){
 }
 function setNubeOpacity(v){nubeOpacity=parseFloat(v);if(nubeOn){viewer.removeAllSurfaces();loadNube()}}
 function toggleCarga(){
+  if(!nubeOn)return; // only works with nube
   cargaOn=!cargaOn;
   document.getElementById('btnCarga').classList.toggle('on',cargaOn);
-  if(nubeOn){viewer.removeAllSurfaces();loadNube()}
-  else if(cargaOn){
-    const ch=computeCharges(viewer.getModel());
-    ch.atoms.forEach((a,i)=>{
-      const[r,g,b]=rgbFromCharge(ch.charges[i]);
-      viewer.setStyle({serial:a.serial},{stick:{color:{r,g,b},radius:.15}});
-    });
-    viewer.render();
-  } else {applyStyle()}
+  viewer.removeAllSurfaces();loadNube();
 }
 
 window.addEventListener('load',init);
