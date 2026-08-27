@@ -69,8 +69,8 @@ body{font-family:var(--mono);background:var(--bg);color:var(--ink);overflow:hidd
 .toolbar .sep{width:1px;height:18px;background:var(--line);margin:0 2px}
 /* nube / opacity slider */
 #btnNube.on{background:#2563eb;color:#fff;border-color:#2563eb}
-#btnCarga{opacity:.3;pointer-events:none}
-#btnCarga.on{background:#dc2626;color:#fff;border-color:#dc2626;opacity:1;pointer-events:auto}
+#btnCarga.disabled{opacity:.35;cursor:not-allowed}
+#btnCarga.on{background:#dc2626;color:#fff;border-color:#dc2626}
 #opacityWrap{display:none;align-items:center;gap:6px;font-size:.65rem;color:var(--secondary);text-transform:uppercase;letter-spacing:.04em}
 #opacityWrap.show{display:flex}
 #opacityWrap input[type=range]{width:80px;accent-color:var(--ink)}
@@ -181,7 +181,7 @@ body{font-family:var(--mono);background:var(--bg);color:var(--ink);overflow:hidd
         <div style="color:#737373;font-size:.65rem;margin-top:3px" id="eBarLabel">—</div>
       </div>
       <div class="key-hints">
-        <kbd>←</kbd><kbd>→</kbd> NAV · <kbd>E</kbd> ESTILO · <kbd>S</kbd> GIRO · <kbd>R</kbd> RESET
+        <kbd>E</kbd> ESTILO · <kbd>S</kbd> GIRO
       </div>
     </div>
   </div>
@@ -201,13 +201,11 @@ function init(){
   }
   viewer=$3Dmol.createViewer(document.getElementById('viewer3d'),{backgroundColor:'#111111',antialias:true});
   selectMol(Object.keys(DATA)[0]);
+  document.getElementById('btnCarga').classList.add('disabled');
   document.addEventListener('keydown',e=>{
     if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
-    if(e.key==='ArrowRight')nav(1);
-    else if(e.key==='ArrowLeft')nav(-1);
-    else if(e.key.toLowerCase()==='e')cycleStyle();
+    if(e.key.toLowerCase()==='e')cycleStyle();
     else if(e.key.toLowerCase()==='s')toggleSpin();
-    else if(e.key.toLowerCase()==='r')resetView();
   });
 }
 
@@ -349,6 +347,7 @@ function toggleNube(){
   document.getElementById('opacityWrap').classList.toggle('show',nubeOn);
   // CARGA only available with nube
   const cb=document.getElementById('btnCarga');
+  cb.classList.toggle('disabled',!nubeOn);
   if(!nubeOn){cargaOn=false;cb.classList.remove('on')}
   if(nubeOn) loadNube(); else{viewer.removeAllSurfaces();viewer.render()}
 }
