@@ -204,8 +204,11 @@ function init(){
   document.getElementById('btnCarga').classList.add('disabled');
   document.addEventListener('keydown',e=>{
     if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
-    if(e.key.toLowerCase()==='e')cycleStyle();
-    else if(e.key.toLowerCase()==='s')toggleSpin();
+    const k=e.key.toLowerCase();
+    if(k==='e')cycleStyle();
+    else if(k==='s')toggleSpin();
+    else if(k==='n')toggleNube();
+    else if(k==='c')toggleCarga();
   });
 }
 
@@ -241,13 +244,6 @@ function loadConf(idx){
   viewer.addModel(d.blocks[idx],'sdf');
   applyStyle();
   if(nubeOn) loadNube();
-  else if(cargaOn){
-    const ch=computeCharges(viewer.getModel());
-    ch.atoms.forEach((a,i)=>{
-      const[r,g,b]=rgbFromCharge(ch.charges[i]);
-      viewer.setStyle({serial:a.serial},{stick:{color:{r,g,b},radius:.15}});
-    });
-  }
   viewer.zoomTo();viewer.render();
   document.querySelectorAll('.conf-item').forEach(item=>{
     item.classList.remove('active');
@@ -319,18 +315,21 @@ function rgbFromCharge(q){
 }
 async function loadNube(){
   viewer.removeAllSurfaces();
+  applyStyle(); // keep normal stick style
   if(cargaOn){
     // Charge-colored surface
     const ch=computeCharges(viewer.getModel());
-    const vol=viewer.addSurface($3Dmol.SurfaceType.VDW,{
+    // Build color volume from charges mapped to VDW radii
+    const atoms=ch.atoms;const q=ch.charges;
+    // Assign colors to surface via per-atom color
+    viewer.addSurface($3Dmol.SurfaceType.VDW,{
       opacity:nubeOpacity,
-      voldata:null
-    });
-    // Apply charge coloring to sticks
-    const styl={};
-    ch.atoms.forEach((a,i)=>{
-      const[r,g,b]=rgbFromCharge(ch.charges[i]);
-      viewer.setStyle({serial:a.serial},{stick:{color:{r,g,b},radius:.15}});
+      colorfunc:function(atom){
+        const idx=atoms.findIndex(a=>a.serial===atom.serial);
+        if(idx<0)return{r:255,g:255,b:255};
+        const[r,g,b]=rgbFromCharge(q[idx]);
+        return{r,g,b};
+      }
     });
   } else {
     viewer.addSurface($3Dmol.SurfaceType.VDW,{
