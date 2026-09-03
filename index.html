@@ -199,7 +199,7 @@ function init(){
     b.className='tab';b.textContent=d.label;b.dataset.key=k;
     b.onclick=()=>selectMol(k);tabs.appendChild(b);
   }
-  viewer=$3Dmol.createViewer(document.getElementById('viewer3d'),{backgroundColor:'#111111',antialias:true});
+  viewer=$3Dmol.createViewer(document.getElementById('viewer3d'),{backgroundColor:'#FFFFFF',antialias:true});
   selectMol(Object.keys(DATA)[0]);
   document.addEventListener('keydown',e=>{
     if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
@@ -260,7 +260,7 @@ function loadConf(idx){
 function applyStyle(){
   viewer.setStyle({},{});
   const sm={};
-  const cs=cColor==='element'?'Jmol':cColor;
+  const cs=cColor==='element'?{C:'#505050',H:'#909090',O:'#d02020',N:'#2050a0',S:'#b09000'}:cColor;
   sm.stick={stick:{radius:.15,colorscheme:cs}};
   sm.sphere={sphere:{scale:.5,colorscheme:cs}};
   sm.line={line:{linewidth:2,colorscheme:cs}};
