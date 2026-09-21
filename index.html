@@ -173,6 +173,7 @@ body{font-family:var(--mono);background:var(--bg);color:var(--ink);overflow:hidd
         <div class="r"><span class="l">Energía</span><span class="v ev" id="iE">—</span></div>
         <div class="r"><span class="l">ΔE</span><span class="v" id="iD">—</span></div>
         <div class="r"><span class="l">Ranking</span><span class="v" id="iRank">—</span></div>
+        <div class="r"><span class="l">Boltzmann</span><span class="v" id="iBoltz" style="color:#f0883e">—</span></div>
       </div>
       <div class="energy-bar" id="eBar">
         <div class="label">Energía relativa</div>
@@ -180,7 +181,7 @@ body{font-family:var(--mono);background:var(--bg);color:var(--ink);overflow:hidd
         <div style="color:#737373;font-size:.65rem;margin-top:3px" id="eBarLabel">—</div>
       </div>
       <div class="key-hints">
-        <kbd>E</kbd> ESTILO · <kbd>S</kbd> GIRO
+        <kbd>←→</kbd> CONFORMEROS · <kbd>E</kbd> ESTILO · <kbd>S</kbd> GIRO
       </div>
     </div>
   </div>
@@ -206,6 +207,8 @@ function init(){
     if(k==='e')cycleStyle();
     else if(k==='s')toggleSpin();
     else if(k==='n')toggleNube();
+    else if(k==='arrowleft')nav(-1);
+    else if(k==='arrowright')nav(1);
   });
 }
 
@@ -220,12 +223,12 @@ function selectMol(key){
   document.querySelector('.tab[data-key="'+key+'"]').classList.add('active');
   const list=document.getElementById('confList');list.innerHTML='';
   const d=DATA[key];
-  d.energies.forEach((e,i)=>{
+  d.energies_rel.forEach((e,i)=>{
     const div=document.createElement('div');
     div.className='conf-item'+(i===0?' active best':'');
     div.dataset.idx=i;
     const eStr=e!==null?e.toFixed(2):'—';
-    const de=i===0?'REF':'+'+(e-d.energies[0]).toFixed(1);
+    const de=i===0?'REF':'+'+(e-d.energies_rel[0]).toFixed(1);
     div.innerHTML='<div class="conf-num">'+(i+1)+'</div><div class="conf-info"><div style="font-weight:600;font-size:.75rem">'+d.label+' #'+(i+1)+'</div><div class="e">'+eStr+' KCAL/MOL · '+de+'</div></div>';
     div.onclick=()=>{loadConf(i);if(window.innerWidth<=768)toggleSidebar()};
     list.appendChild(div);
@@ -246,7 +249,7 @@ function loadConf(idx){
     item.classList.remove('active');
     if(parseInt(item.dataset.idx)===idx){item.classList.add('active');item.scrollIntoView({block:'nearest',behavior:'smooth'})}
   });
-  const e=d.energies[idx],e0=d.energies[0],emax=d.energies[d.energies.length-1];
+  const e=d.energies_rel[idx],e0=d.energies_rel[0],emax=d.energies_rel[d.energies_rel.length-1];
   document.getElementById('iConf').textContent='#'+(idx+1)+' / '+d.blocks.length;
   document.getElementById('iE').textContent=e!==null?e.toFixed(4)+' KCAL/MOL':'—';
   document.getElementById('iD').textContent=idx===0?'REF (MÍNIMO)':'+'+(e-e0).toFixed(2)+' KCAL/MOL';
@@ -254,6 +257,8 @@ function loadConf(idx){
   const pct=emax>e0?(e-e0)/(emax-e0)*100:0;
   document.getElementById('eBarFill').style.width=pct+'%';
   document.getElementById('eBarLabel').textContent='ΔE = '+(idx===0?'0.0':(e-e0).toFixed(1))+' KCAL/MOL';
+  const w=d.weights[idx];
+  document.getElementById('iBoltz').textContent=(w*100).toFixed(1)+'%';
 }
 
 function applyStyle(){
